@@ -5,10 +5,10 @@ const SphereBackground = () => {
   const mountRef = useRef(null);
 
   useEffect(() => {
-    // Создание сцены
+    // Create the scene
     const scene = new THREE.Scene();
 
-    // Создание камеры
+    // Create the camera
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
@@ -17,12 +17,12 @@ const SphereBackground = () => {
     );
     camera.position.z = 3;
 
-    // Создание рендера
+    // Create the renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Создание источников света
+    // Create light sources
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
@@ -30,14 +30,14 @@ const SphereBackground = () => {
     pointLight.position.set(5, 5, 5);
     scene.add(pointLight);
 
-    // Шейдерный материал
+    // Shader material
     const vertexShader = `
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
       uniform float time;
 
-      // Функция фрактального шума
+      // Fractal noise function
       float hash(float n) { return fract(sin(n) * 43758.5453123); }
       float noise(vec3 x) {
         vec3 p = floor(x);
@@ -55,7 +55,7 @@ const SphereBackground = () => {
         vNormal = normal;
         vPosition = position;
 
-        // Дислокация вершин для создания эффекта скульптинга
+        // Displace vertices to create a sculpting effect
         float displacement = noise(position * 3.0 + time) * 0.2;
         vec3 newPosition = position + normal * displacement;
 
@@ -70,11 +70,11 @@ const SphereBackground = () => {
       uniform float time;
 
       void main() {
-        // Освещение
+        // Lighting
         vec3 lightDir = normalize(vec3(0.5, 0.5, 1.0));
         float lightIntensity = max(dot(vNormal, lightDir), 0.0) + 0.5;
 
-        // Градиент цвета на основе высоты
+        // Gradient color based on height
         float heightFactor = (vPosition.y + 1.0) / 2.0;
         vec3 baseColor = mix(vec3(0.2, 0.3, 0.5), vec3(0.8, 0.9, 1.0), heightFactor);
         vec3 color = baseColor * lightIntensity;
@@ -92,19 +92,19 @@ const SphereBackground = () => {
       transparent: true,
     });
 
-    // Создание геометрии сферы
+    // Create the sphere geometry
     const geometry = new THREE.SphereGeometry(1.5, 96, 96);
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
-    // Анимация
+    // Animation
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Обновление времени для анимации
+      // Update time for animation
       material.uniforms.time.value += 0.01;
 
-      // Вращение сферы для более динамичного эффекта
+      // Rotate the sphere for a more dynamic effect
       sphere.rotation.y += 0.005;
 
       renderer.render(scene, camera);
@@ -112,7 +112,7 @@ const SphereBackground = () => {
 
     animate();
 
-    // Обработчик изменения размера окна
+    // Handle window resize
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -123,7 +123,7 @@ const SphereBackground = () => {
 
     window.addEventListener('resize', handleResize);
 
-    // Очистка на размонтировании
+    // Clean up on unmount
     return () => {
       window.removeEventListener('resize', handleResize);
       mountRef.current.removeChild(renderer.domElement);
@@ -140,7 +140,7 @@ const styles = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '100%',
-    height: ' 100%',
+    height: '100%',
   },
 };
 
