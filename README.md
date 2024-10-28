@@ -1,5 +1,5 @@
 
-# TapLink. Template
+# 3D Sphere Background
 3d sphere created in threejs. <br>
 Just integrate the JS file into your page! <br>
 There is an adjustment of colors, animation speed.
